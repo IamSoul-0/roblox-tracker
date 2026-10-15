@@ -1,0 +1,36 @@
+name: Check Onett Group
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'  # Runs automatically every 15 minutes
+  workflow_dispatch:         # Allows you to click a button to test it manually
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run script
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          USER_ID_TO_PING: ${{ secrets.USER_ID_TO_PING }}
+        run: python tracker.py
+
+      - name: Save updated count
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Update last known member count automatically"
+          file_pattern: last_count.txt
