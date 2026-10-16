@@ -33,11 +33,17 @@ def main():
 
     print(f"Current count: {current_count}, Last saved count: {last_count}")
 
-    if last_count is not None and current_count > last_count:
-        diff = current_count - last_count
-        msg = {
-            "content": f"<@{USER_ID_TO_PING}> 🚨 **NEW MEMBER JOINED!** 🚨\n**{group_name}** went from **{last_count}** to **{current_count}** members (+{diff}). Onett might be accepting requests right now!"
-        }
+    if last_count is not None and current_count != last_count:
+        if current_count > last_count:
+            diff = current_count - last_count
+            msg = {
+                "content": f"<@{USER_ID_TO_PING}> 🚨 **MEMBER COUNT INCREASED!** 🚨\n**{group_name}** went from **{last_count}** to **{current_count}** members (+{diff}). Onett might be accepting requests!"
+            }
+        else:
+            diff = last_count - current_count
+            msg = {
+                "content": f"<@{USER_ID_TO_PING}> 📉 **MEMBER COUNT DECREASED!** 📉\n**{group_name}** went from **{last_count}** to **{current_count}** members (-{diff})."
+            }
         requests.post(DISCORD_WEBHOOK_URL, json=msg)
 
     save_count(current_count)
